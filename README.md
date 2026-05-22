@@ -90,8 +90,8 @@ RAG-Based-AI-Teaching-Assistant/
 ## Step 1 — Clone the Repository
 
 ```bash
-git clone <your-repository-link>
-cd your-project-folder
+git clone https://github.com/V-A-N-S-H/RAG-Based-AI-Teaching-Assistant.git
+cd RAG-Based-AI-Teaching-Assistant
 ```
 
 ---
