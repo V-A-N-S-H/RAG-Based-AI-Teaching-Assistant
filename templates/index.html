@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sigma Web Dev — AI Teaching Assistant</title>
+  <title>RAG Based AI Teaching Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet"
   />
   <!-- marked.js for Markdown rendering in AI responses -->
@@ -14,6 +15,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
+
+  <!-- Decorative Ambient Glow Background Circles -->
+  <div class="ambient-glow bg-glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow bg-glow-2" aria-hidden="true"></div>
+  <div class="ambient-glow bg-glow-3" aria-hidden="true"></div>
 
   <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
   <header class="app-header">
@@ -28,15 +34,20 @@
 
     <div class="header-brand">
       <div class="brand-icon" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="url(#brandGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#818cf8" />
+              <stop offset="100%" stop-color="#c084fc" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
         </svg>
       </div>
       <div class="brand-text">
-        <span class="brand-name">Sigma Web Dev Course</span>
-        <span class="brand-sub">AI Teaching Assistant</span>
+        <span class="brand-name">RAG Based AI</span>
+        <span class="brand-sub">Teaching Assistant</span>
       </div>
     </div>
 
@@ -46,14 +57,14 @@
         <span id="statusLabel">Connecting…</span>
       </div>
       <button class="clear-btn" id="clearBtn" title="Clear chat" aria-label="Clear conversation">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/>
           <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
           <path d="M10 11v6M14 11v6"/>
           <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
         </svg>
-        Clear
+        <span>Clear Chat</span>
       </button>
     </div>
   </header>
@@ -66,79 +77,113 @@
 
       <section class="sidebar-section">
         <h3 class="sidebar-heading">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
           </svg>
-          Course Videos
+          Course Lectures
         </h3>
         <ul class="course-list" role="list">
-          <li class="course-item">
+          <li class="course-item" data-lecture="1" data-title="Installing VS Code &amp; How Websites Work">
             <span class="course-num">01</span>
             <span class="course-name">Installing VS Code &amp; How Websites Work</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="2" data-title="Your First HTML Website">
             <span class="course-num">02</span>
             <span class="course-name">Your First HTML Website</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="3" data-title="Basic Structure of an HTML Website">
             <span class="course-num">03</span>
             <span class="course-name">Basic Structure of an HTML Website</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="4" data-title="Heading, Paragraphs and Links">
             <span class="course-num">04</span>
             <span class="course-name">Heading, Paragraphs and Links</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="5" data-title="Image, Lists, and Tables in HTML">
             <span class="course-num">05</span>
             <span class="course-name">Image, Lists, and Tables in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="6" data-title="SEO and Core Web Vitals in HTML">
             <span class="course-num">06</span>
             <span class="course-name">SEO and Core Web Vitals in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="7" data-title="Forms and Input Tags in HTML">
             <span class="course-num">07</span>
             <span class="course-name">Forms and Input Tags in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="8" data-title="Inline &amp; Block Elements in HTML">
             <span class="course-num">08</span>
             <span class="course-name">Inline &amp; Block Elements in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="9" data-title="Id &amp; Classes in HTML">
             <span class="course-num">09</span>
             <span class="course-name">Id &amp; Classes in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
-          <li class="course-item">
+          <li class="course-item" data-lecture="10" data-title="Video, Audio &amp; Media in HTML">
             <span class="course-num">10</span>
             <span class="course-name">Video, Audio &amp; Media in HTML</span>
+            <span class="course-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
           </li>
         </ul>
       </section>
 
       <section class="sidebar-section">
         <h3 class="sidebar-heading">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
-          How RAG Works
+          RAG Pipeline Workflow
         </h3>
         <div class="pipeline">
           <div class="pipe-step">
             <div class="pipe-num">1</div>
-            <div class="pipe-text">Your question is turned into a <strong>vector embedding</strong></div>
+            <div class="pipe-text">Student question is embedded via <strong>bge-m3</strong> model</div>
           </div>
-          <div class="pipe-arrow">↓</div>
+          <div class="pipe-arrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
           <div class="pipe-step">
             <div class="pipe-num">2</div>
-            <div class="pipe-text"><strong>Semantic search</strong> finds the most relevant video transcript chunks</div>
+            <div class="pipe-text"><strong>Semantic similarity</strong> searches indexed video chunks</div>
           </div>
-          <div class="pipe-arrow">↓</div>
+          <div class="pipe-arrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
           <div class="pipe-step">
             <div class="pipe-num">3</div>
-            <div class="pipe-text">An <strong>LLM generates</strong> a contextual, timestamped answer</div>
+            <div class="pipe-text"><strong>Llama 3.2</strong> constructs a timestamped contextual response</div>
           </div>
         </div>
         <div class="tech-stack">
@@ -165,11 +210,19 @@
 
         <!-- Welcome message -->
         <div class="msg-row msg-assistant" id="welcomeMsg">
-          <div class="msg-avatar" aria-hidden="true">🤖</div>
+          <div class="msg-avatar" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 0 1 7.54 16.59c-.4.4-.8.77-1.25 1.1A3.33 3.33 0 0 0 17 22H7a3.33 3.33 0 0 0-1.29-2.31c-.45-.33-.85-.7-1.25-1.1A10 10 0 0 1 12 2z"/>
+              <path d="M9 10h.01M15 10h.01M10 15h4"/>
+            </svg>
+          </div>
           <div class="msg-content">
             <div class="msg-bubble msg-bubble-assistant">
-              <p>👋 <strong>Hi! I'm your AI Teaching Assistant</strong> for the Sigma Web Development Course.</p>
-              <p>I can answer questions about any of the <strong>10 video lectures</strong> and point you to the exact timestamp where a topic is covered. Try asking me something!</p>
+              <div class="welcome-banner">
+                <h1>Hello, Learner! 👋</h1>
+                <p>I am your <strong>RAG Based AI Teaching Assistant</strong>.</p>
+                <p>I possess full knowledge of all <strong>10 lectures</strong>. Ask me anything, and I'll find the exact explanations, code samples, and time intervals in the videos for you!</p>
+              </div>
             </div>
             <div class="suggestion-chips" role="group" aria-label="Suggested questions">
               <button class="chip" onclick="useSuggestion(this)">Where is CSS taught in the course?</button>
@@ -189,7 +242,7 @@
         <div class="input-box">
           <textarea
             id="questionInput"
-            placeholder="Ask anything about the Sigma Web Dev Course…"
+            placeholder="Ask anything about the Web Development Course..."
             rows="1"
             onkeydown="handleKey(event)"
             oninput="autoResize(this)"

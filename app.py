@@ -120,8 +120,7 @@ def ask():
         ].to_json(orient="records")
 
         prompt = (
-            "You are a helpful and friendly AI Teaching Assistant for the "
-            "Sigma Web Development Course.\n"
+            "You are a helpful and friendly RAG Based AI Teaching Assistant.\n"
             "Below are the most relevant transcript excerpts from the course videos "
             "(video title, number, start/end time in seconds, and text):\n\n"
             f"{context_json}\n\n"
