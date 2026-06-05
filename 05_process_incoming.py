@@ -17,8 +17,8 @@ def create_embedding(text_list):
 
 def inference(prompt):
     r = requests.post('http://localhost:11434/api/generate', json={
-        # "model": "llama3.2",
-        "model": "gemma4:e4b"
+        "model": "llama3.2",
+        # "model": "gemma4:e4b",
         "prompt": prompt,
         "stream": False
     })
@@ -60,7 +60,7 @@ with open("response.txt", "w") as f:
 
 # for index, item in new_df.iterrows():
 #     print(f"Title: {item['title']}")
-#     print(f"Chapter Number: {item['number']}")
+#     print(f"Chapter Number: {item['number']}")X
 #     print(f"Text: {item['text']}")
 #     print(f"start : {item['start']}, end : {item['end']}")
 #     print("\n---\n")
